@@ -63,6 +63,10 @@ public class Game implements Runnable {
         return height;
     }
     
+    public KeyManager getKeyManager() {
+        return keyManager;
+    }
+    
     /**
      * initializing the display window of the game
      */
@@ -73,17 +77,15 @@ public class Game implements Runnable {
          //Create the Array colection of enemies
          enemies = new ArrayList<Enemy>();
          //Adding enemies to the collection 
-         //Aqui es donde se declaran el numero de enemigos
+         //Aqui es donde se declaran el numero de enemigos y su posicion
          for(int i = 0; i < 10; i++){
-            //int iTX = 
-            //int iTY =
-            
-            //AGREGAR UN CICLO QUE TENGA UN ENEMIGO TEMPORAL QUE COMPARE LAS COORDENADAS 
-            //DE LOS DEMAS Y SI SI LO AGREGUE, O NO
-            enemies.add(new Enemy((int) (Math.random() * (getWidth() - 80)), 
-                -(int)(Math.random()* 2 * getHeight()), 80, 80, this));
+             for(int j = 0; j < 5; j++){
+                 int width_enemy = getWidth()/10;
+                 Enemy enemy = new Enemy(i * width_enemy + 2, 30 * j +5, 
+                         width_enemy - 10, 25, this); 
+                 enemies.add(enemy);
+             }
          }
-         
          //Create the array list of bullets
          bullets = new ArrayList<Bullet>();
  
@@ -119,10 +121,6 @@ public class Game implements Runnable {
             }
         }
         stop();
-    }
-
-    public KeyManager getKeyManager() {
-        return keyManager;
     }
     
     private void tick() {
