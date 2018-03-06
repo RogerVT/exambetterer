@@ -19,11 +19,23 @@ public class Enemy extends Item{
     public Enemy(int x, int y, int width, int height, Game game) {
         super(x, y, width, height);
         this.game = game;
+        direction = 1; 
     }
 
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+    
     @Override
     public void tick() {
-       setY(getY() + 5);
+       setX(getX() + 1 * getDirection()); // to move 1 depending in the direction
+       if(getX() + 20 > game.getWidth()){ // if it hits the right border, change direction
+           setDirection(-1);
+       }
     }
 
     @Override
