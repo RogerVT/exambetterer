@@ -78,8 +78,8 @@ public class Game implements Runnable {
          enemies = new ArrayList<Enemy>();
          //Adding enemies to the collection 
          //Aqui es donde se declaran el numero de enemigos y su posicion
-         for(int i = 0; i < 10; i++){
-             for(int j = 0; j < 5; j++){
+         for(int i = 0; i < 1; i++){
+             for(int j = 0; j < 1; j++){
                  int width_enemy = getWidth()/10;
                  Enemy enemy = new Enemy(i * width_enemy + 2, 30 * j +5, 
                          width_enemy - 10, 25, this); 
