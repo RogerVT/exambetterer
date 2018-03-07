@@ -15,6 +15,9 @@ public class Assets {
     public static BufferedImage background; // to store background image
     public static BufferedImage player;     // to store the player image
     public static BufferedImage enemy;     // to store the player image
+    public static SoundClip Dead; //sound when you kill an enemy 
+    public static SoundClip build; //when enemies appeared 
+    public static SoundClip shoot; 
 
     /**
      * initializing the images of the game
@@ -23,5 +26,8 @@ public class Assets {
         background = ImageLoader.loadImage("/images/Background.png");
         player = ImageLoader.loadImage("/images/Nave.png");
         enemy = ImageLoader.loadImage("/images/Alien.png");
+        Dead = new SoundClip("/Sounds/dead.wav");
+        build = new SoundClip("/Sounds/build.wav");
+        shoot = new SoundClip ("/Sounds/shoot.wav");
     }
 }

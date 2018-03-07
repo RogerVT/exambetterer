@@ -29,10 +29,11 @@ public class Game implements Runnable {
     private Player player;          // to use a player
     private ArrayList<Enemy> enemies; // To store an enemies colection
     private ArrayList<Bullet> bullets;  //to store bullets
-    private ArrayList<Bullet> Enemybullets;  //to store bullets of the enemies
     private KeyManager keyManager;  // to manage the keyboard    
     private boolean pause;          // to know if the game is pause
-    private Enemy Boss;            //to create the boss 
+    private SoundClip dead; 
+    private SoundClip build; 
+    private SoundClip shoot;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -97,6 +98,7 @@ public class Game implements Runnable {
          enemies = new ArrayList<Enemy>();
          //Adding enemies to the collection 
          //Aqui es donde se declaran el numero de enemigos y su posicion
+         Assets.build.play();
          for(int i = 0; i < 7; i++){
              for(int j = 0; j < 5; j++){
                  int width_enemy = getWidth()/10;
@@ -106,10 +108,7 @@ public class Game implements Runnable {
              }
          }
          //Create the array list of bullets
-         Enemybullets = new ArrayList<Bullet>();
          bullets = new ArrayList<Bullet>();
-         
-         Boss = new Enemy(300, 300,40, 25, 1, this); 
          
          display.getJframe().addKeyListener(keyManager);
     }
@@ -153,7 +152,6 @@ public class Game implements Runnable {
         }
         if(!pause){
            player.tick();
-           Boss.tick();
             //Moving the enemies
             Iterator itr = enemies.iterator();
             while(itr.hasNext()){
@@ -166,34 +164,12 @@ public class Game implements Runnable {
                 //PERO EN EL REDNER SI
                 if(player.intersects(enemy)){
                     gameOver = true;
-                } 
-                
-                
-                //to add the bullets
-                if(enemy.isShoot()){
-                   if(Enemybullets.size() < 1){
-                       Enemybullets.add(new Bullet(enemy.getX() + enemy.getWidth()/2 - 10, enemy.getY(), 20, 20, -1, this));
-                   }
-                }
-                
-                //update the iterator 
-                itr = Enemybullets.iterator();
-                while(itr.hasNext()){
-                    Bullet bullet = (Bullet) itr.next();
-                    bullet.tick();
-                    if(bullet.intersects(this.player)){
-                        gameOver = true;
-                    }
-                    
-                    if(bullet.getY() + 10 > getWidth()){
-                        Enemybullets.remove(bullet);
-                        itr = Enemybullets.iterator();
-                    }
-                }
+                }     
             }
 
             //Check if a bullet must be add
             if(this.getKeyManager().isSpace()){
+                Assets.shoot.play();
                 bullets.add(new Bullet(this.player.getX() + player.getWidth()/2 - 10, this.player.getY(), 20, 20, 1, this));
             }
             //Update the bullet position
@@ -210,8 +186,10 @@ public class Game implements Runnable {
                     Enemy enemy = (Enemy) itr2.next();
                     if(bullet.intersects(enemy)){
                         //if enemies is empty, add new set of enemies
+                        Assets.Dead.play();
                         enemies.remove(enemy);
                         if(enemies.isEmpty()){
+                            Assets.build.play();
                             for(int i = 0; i < 7; i++){
                                 for(int j = 0; j < 5; j++){
                                     int width_enemy = getWidth()/10;
@@ -255,7 +233,6 @@ public class Game implements Runnable {
                 g = bs.getDrawGraphics();
                 g.drawImage(Assets.background, 0, 0, width, height, null);
                 player.render(g);
-                Boss.render(g);
                 Iterator itr = enemies.iterator();
                 while(itr.hasNext()){
                 ((Enemy) itr.next()).render(g);
@@ -264,11 +241,6 @@ public class Game implements Runnable {
                 itr = bullets.iterator();
                 while(itr.hasNext()){
                 ((Bullet) itr.next()).render(g);
-                }
-                
-                itr = Enemybullets.iterator();
-                while(itr.hasNext()){
-                    ((Bullet) itr.next()).render(g);
                 }
                 
             }else{
