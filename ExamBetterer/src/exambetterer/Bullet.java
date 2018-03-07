@@ -14,17 +14,18 @@ import java.awt.Graphics;
  */
 public class Bullet extends Item{
 
-    private int direction;
+    private int direction; //depends if its a bullet from the enemy or the player
     private Game game;
     
-    public Bullet(int x, int y, int width, int height, Game game) {
+    public Bullet(int x, int y, int width, int height, int direction, Game game) {
         super(x, y, width, height);
         this.game = game;
+        this.direction = direction; 
     }
 
     @Override
     public void tick() {
-       setY(getY() - 5);
+       setY(getY() - 5 * direction);
     }
 
     @Override

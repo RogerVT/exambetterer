@@ -33,8 +33,9 @@ public class Enemy extends Item{
     @Override
     public void tick() {
        setX(getX() + 1 * getDirection()); // to move 1 depending in the direction
-       if(getX() + 20 > game.getWidth()){ // if it hits the right border, change direction
-           setDirection(-1);
+       if(getX() + 50 >= game.getWidth() || getX() <= -10){ // if it hits the borders, change direction and move down
+           setDirection(getDirection() * -1);
+           setY(getY() + 3);
        }
     }
 

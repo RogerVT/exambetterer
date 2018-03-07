@@ -47,6 +47,22 @@ public class Game implements Runnable {
         keyManager = new KeyManager();
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public void setEnemies(ArrayList<Enemy> enemies) {
+        this.enemies = enemies;
+    }
+
     /**
      * To get the width of the game window
      * @return an <code>int</code> value with the width
@@ -73,13 +89,13 @@ public class Game implements Runnable {
     private void init() {
          display = new Display(title, getWidth(), getHeight());  
          Assets.init();
-         player = new Player(0, getHeight() - 100, 1, 100, 100, this);
+         player = new Player(0, getHeight() - 100, 100, 100, this);
          //Create the Array colection of enemies
          enemies = new ArrayList<Enemy>();
          //Adding enemies to the collection 
          //Aqui es donde se declaran el numero de enemigos y su posicion
-         for(int i = 0; i < 1; i++){
-             for(int j = 0; j < 1; j++){
+         for(int i = 0; i < 7; i++){
+             for(int j = 0; j < 5; j++){
                  int width_enemy = getWidth()/10;
                  Enemy enemy = new Enemy(i * width_enemy + 2, 30 * j +5, 
                          width_enemy - 10, 25, this); 
@@ -150,7 +166,7 @@ public class Game implements Runnable {
         
         //Check if a bullet must be add
         if(this.getKeyManager().space){
-            bullets.add(new Bullet(this.player.getX() + player.getWidth()/2 - 10, this.player.getY(), 20, 20, this));
+            bullets.add(new Bullet(this.player.getX() + player.getWidth()/2 - 10, this.player.getY(), 20, 20, 1, this));
         }
         //Update the bullet position
         itr = bullets.iterator();
@@ -163,12 +179,21 @@ public class Game implements Runnable {
             while(itr2.hasNext()){
                 Enemy enemy = (Enemy) itr2.next();
                 if(bullet.intersects(enemy)){
-                    //Reset enemies position
-                    enemy.setX((int) (Math.random() * (getWidth() - 80)));
-                    enemy.setY(-(int)(Math.random()* 2 * getHeight()));
+                    //if enemies is empty, add new set of enemies
+                    enemies.remove(enemy);
+                    if(enemies.isEmpty()){
+                        for(int i = 0; i < 7; i++){
+                            for(int j = 0; j < 5; j++){
+                                int width_enemy = getWidth()/10;
+                                enemies.add(new Enemy(i * width_enemy + 2, 30 * j +5, 
+                                    width_enemy - 10, 25, this)); 
+                                enemies.add(enemy);
+                            }
+                        }
+                    }
+                    itr2 = enemies.iterator(); //update iterator
                     
                     bullets.remove(bullet);
-                   
                     //Update the iterators, to avoid problems with the iterator 
                     itr = bullets.iterator();
                 }
