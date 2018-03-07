@@ -63,9 +63,9 @@ public class Files { //i dont know whats happening in this file
                 int Height = (Integer.parseInt(tokens[2]));
                 int move = (Integer.parseInt(tokens[3]));
                 
-                Enemy enemy = new Enemy(X, Y, 100, Height, game);
+                //Enemy enemy = new Enemy(X, Y, 100, Height, game);
                 
-                game.getEnemies().add(enemy);
+                //game.getEnemies().add(enemy);
            }
            
        } catch(IOException ioe){

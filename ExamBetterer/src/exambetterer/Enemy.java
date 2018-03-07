@@ -15,11 +15,21 @@ public class Enemy extends Item{
 
     private int direction;
     private Game game;
+    private int velocity; // to set the velocity of the enemy 
     
-    public Enemy(int x, int y, int width, int height, Game game) {
+    public Enemy(int x, int y, int width, int height, int velocity, Game game) {
         super(x, y, width, height);
         this.game = game;
         direction = 1; 
+        this.velocity = velocity; 
+    }
+
+    public int getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(int velocity) {
+        this.velocity = velocity;
     }
 
     public int getDirection() {
@@ -32,10 +42,13 @@ public class Enemy extends Item{
     
     @Override
     public void tick() {
-       setX(getX() + 1 * getDirection()); // to move 1 depending in the direction
+       setX(getX() + getVelocity() * getDirection()); // to move 1 depending in the direction
        if(getX() + 50 >= game.getWidth() || getX() <= -10){ // if it hits the borders, change direction and move down
+           if(getVelocity() <= 8){ // set a limit for the velocity 
+               setVelocity(getVelocity()+1);
+           }
            setDirection(getDirection() * -1);
-           setY(getY() + 3);
+           setY(getY() + 4 + getVelocity());
        }
     }
 

@@ -30,6 +30,7 @@ public class Game implements Runnable {
     private ArrayList<Enemy> enemies; // To store an enemies colection
     private ArrayList<Bullet> bullets;  //to store bullets
     private KeyManager keyManager;  // to manage the keyboard
+    private int VelocityEnemies; //to set the velocity of every enemy 
     
     
     /**
@@ -45,6 +46,7 @@ public class Game implements Runnable {
         running = false;
         gameOver = false;
         keyManager = new KeyManager();
+        VelocityEnemies = 1; 
     }
 
     public Player getPlayer() {
@@ -97,8 +99,8 @@ public class Game implements Runnable {
          for(int i = 0; i < 7; i++){
              for(int j = 0; j < 5; j++){
                  int width_enemy = getWidth()/10;
-                 Enemy enemy = new Enemy(i * width_enemy + 2, 30 * j +5, 
-                         width_enemy - 10, 25, this); 
+                 Enemy enemy = new Enemy(i * width_enemy + 2,30 * j +5, 
+                         width_enemy - 10, 25, VelocityEnemies, this); 
                  enemies.add(enemy);
              }
          }
@@ -176,6 +178,8 @@ public class Game implements Runnable {
             bullet.tick();
      
             Iterator itr2 = enemies.iterator();
+            
+            
             while(itr2.hasNext()){
                 Enemy enemy = (Enemy) itr2.next();
                 if(bullet.intersects(enemy)){
@@ -186,7 +190,7 @@ public class Game implements Runnable {
                             for(int j = 0; j < 5; j++){
                                 int width_enemy = getWidth()/10;
                                 enemies.add(new Enemy(i * width_enemy + 2, 30 * j +5, 
-                                    width_enemy - 10, 25, this)); 
+                                    width_enemy - 10, 25, enemy.getVelocity(),this)); 
                                 enemies.add(enemy);
                             }
                         }
