@@ -16,12 +16,23 @@ public class Enemy extends Item{
     private int direction;
     private Game game;
     private int velocity; // to set the velocity of the enemy 
+    private int random;
+    private boolean shoot;    // to know if to shoot
     
     public Enemy(int x, int y, int width, int height, int velocity, Game game) {
         super(x, y, width, height);
         this.game = game;
         direction = 1; 
         this.velocity = velocity; 
+        shoot = false; 
+    }
+
+    public boolean isShoot() {
+        return shoot;
+    }
+
+    public void setShoot(boolean shoot) {
+        this.shoot = shoot;
     }
 
     public int getVelocity() {
@@ -42,6 +53,13 @@ public class Enemy extends Item{
     
     @Override
     public void tick() {
+       random =  (int) (Math.random() * 10 )+1;
+       if(random < 5){ // to know if to shoot or not
+           setShoot(true);
+       }else{
+           setShoot(false);
+       }
+       
        setX(getX() + getVelocity() * getDirection()); // to move 1 depending in the direction
        if(getX() + 50 >= game.getWidth() || getX() <= -10){ // if it hits the borders, change direction and move down
            if(getVelocity() <= 8){ // set a limit for the velocity 

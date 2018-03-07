@@ -25,10 +25,10 @@ public class Player extends Item{
     @Override
     public void tick() {
         // moving player depending on flags
-        if (game.getKeyManager().left) {
+        if (game.getKeyManager().isLeft()) {
            setX(getX() - iPixel);
         }
-        if (game.getKeyManager().right) {
+        if (game.getKeyManager().isRight()) {
            setX(getX() + iPixel);
         }
         // reset x position if colision

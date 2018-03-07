@@ -25,7 +25,7 @@ public class Bullet extends Item{
 
     @Override
     public void tick() {
-       setY(getY() - 5 * direction);
+       setY(getY() - 5*direction);
     }
 
     @Override

@@ -29,9 +29,10 @@ public class Game implements Runnable {
     private Player player;          // to use a player
     private ArrayList<Enemy> enemies; // To store an enemies colection
     private ArrayList<Bullet> bullets;  //to store bullets
-    private KeyManager keyManager;  // to manage the keyboard
-    private int VelocityEnemies; //to set the velocity of every enemy 
-    
+    private ArrayList<Bullet> Enemybullets;  //to store bullets of the enemies
+    private KeyManager keyManager;  // to manage the keyboard    
+    private boolean pause;          // to know if the game is pause
+    private Enemy Boss;            //to create the boss 
     
     /**
      * to create title, width and height and set the game is still not running
@@ -45,8 +46,8 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         gameOver = false;
+        pause= false; 
         keyManager = new KeyManager();
-        VelocityEnemies = 1; 
     }
 
     public Player getPlayer() {
@@ -100,13 +101,16 @@ public class Game implements Runnable {
              for(int j = 0; j < 5; j++){
                  int width_enemy = getWidth()/10;
                  Enemy enemy = new Enemy(i * width_enemy + 2,30 * j +5, 
-                         width_enemy - 10, 25, VelocityEnemies, this); 
+                         width_enemy - 10, 25, 1, this); 
                  enemies.add(enemy);
              }
          }
          //Create the array list of bullets
+         Enemybullets = new ArrayList<Bullet>();
          bullets = new ArrayList<Bullet>();
- 
+         
+         Boss = new Enemy(300, 300,40, 25, 1, this); 
+         
          display.getJframe().addKeyListener(keyManager);
     }
     
@@ -144,73 +148,95 @@ public class Game implements Runnable {
     private void tick() {
         keyManager.tick();
         // avancing player with colision
-        player.tick();
-        //Moving the enemies
-        Iterator itr = enemies.iterator();
-        while(itr.hasNext()){
-            
-            Enemy enemy = (Enemy) itr.next();
-            enemy.tick();
-            
-            //Check if colision for gameover
-            //NO PUEDES UTILIZAR LA SINTAXIS EN EL TICK, PORQUE SE USA NEXT
-            //PERO EN EL REDNER SI
-            if(player.intersects(enemy)){
-                gameOver = true;
-            } 
-            
-            //Resets position
-            if(enemy.getY() >= getHeight()){
-                enemy.setX((int) (Math.random() * (getWidth() - 80)));
-                enemy.setY(-(int)(Math.random()* 2 * getHeight()));
+        if(this.getKeyManager().isP()){
+            pause = !pause;
+        }
+        if(!pause){
+           player.tick();
+           Boss.tick();
+            //Moving the enemies
+            Iterator itr = enemies.iterator();
+            while(itr.hasNext()){
+
+                Enemy enemy = (Enemy) itr.next();
+                enemy.tick();
+
+                //Check if colision for gameover
+                //NO PUEDES UTILIZAR LA SINTAXIS EN EL TICK, PORQUE SE USA NEXT
+                //PERO EN EL REDNER SI
+                if(player.intersects(enemy)){
+                    gameOver = true;
+                } 
+                
+                
+                //to add the bullets
+                if(enemy.isShoot()){
+                   if(Enemybullets.size() < 1){
+                       Enemybullets.add(new Bullet(enemy.getX() + enemy.getWidth()/2 - 10, enemy.getY(), 20, 20, -1, this));
+                   }
+                }
+                
+                //update the iterator 
+                itr = Enemybullets.iterator();
+                while(itr.hasNext()){
+                    Bullet bullet = (Bullet) itr.next();
+                    bullet.tick();
+                    if(bullet.intersects(this.player)){
+                        gameOver = true;
+                    }
+                    
+                    if(bullet.getY() + 10 > getWidth()){
+                        Enemybullets.remove(bullet);
+                        itr = Enemybullets.iterator();
+                    }
+                }
             }
-        }
-        
-        //Check if a bullet must be add
-        if(this.getKeyManager().space){
-            bullets.add(new Bullet(this.player.getX() + player.getWidth()/2 - 10, this.player.getY(), 20, 20, 1, this));
-        }
-        //Update the bullet position
-        itr = bullets.iterator();
-        while(itr.hasNext()){
-            
-            Bullet bullet = (Bullet) itr.next();
-            bullet.tick();
-     
-            Iterator itr2 = enemies.iterator();
-            
-            
-            while(itr2.hasNext()){
-                Enemy enemy = (Enemy) itr2.next();
-                if(bullet.intersects(enemy)){
-                    //if enemies is empty, add new set of enemies
-                    enemies.remove(enemy);
-                    if(enemies.isEmpty()){
-                        for(int i = 0; i < 7; i++){
-                            for(int j = 0; j < 5; j++){
-                                int width_enemy = getWidth()/10;
-                                enemies.add(new Enemy(i * width_enemy + 2, 30 * j +5, 
-                                    width_enemy - 10, 25, enemy.getVelocity(),this)); 
-                                enemies.add(enemy);
+
+            //Check if a bullet must be add
+            if(this.getKeyManager().isSpace()){
+                bullets.add(new Bullet(this.player.getX() + player.getWidth()/2 - 10, this.player.getY(), 20, 20, 1, this));
+            }
+            //Update the bullet position
+            itr = bullets.iterator();
+            while(itr.hasNext()){
+
+                Bullet bullet = (Bullet) itr.next();
+                bullet.tick();
+
+                Iterator itr2 = enemies.iterator();
+
+
+                while(itr2.hasNext()){
+                    Enemy enemy = (Enemy) itr2.next();
+                    if(bullet.intersects(enemy)){
+                        //if enemies is empty, add new set of enemies
+                        enemies.remove(enemy);
+                        if(enemies.isEmpty()){
+                            for(int i = 0; i < 7; i++){
+                                for(int j = 0; j < 5; j++){
+                                    int width_enemy = getWidth()/10;
+                                    enemies.add(new Enemy(i * width_enemy + 2, 30 * j +5, 
+                                        width_enemy - 10, 25, enemy.getVelocity(),this)); 
+                                    enemies.add(enemy);
+                                }
                             }
                         }
+                        itr2 = enemies.iterator(); //update iterator
+
+                        bullets.remove(bullet);
+                        //Update the iterators, to avoid problems with the iterator 
+                        itr = bullets.iterator();
                     }
-                    itr2 = enemies.iterator(); //update iterator
-                    
-                    bullets.remove(bullet);
+                }
+                //Check if the bullet is out of the screen 
+                if(bullet.getY() <= 0){
+                    //Remove the bullet from the list
+                     bullets.remove(bullet);
                     //Update the iterators, to avoid problems with the iterator 
                     itr = bullets.iterator();
                 }
-            }
-            //Check if the bullet is out of the screen 
-            if(bullet.getY() <= 0){
-                //Remove the bullet from the list
-                 bullets.remove(bullet);
-                //Update the iterators, to avoid problems with the iterator 
-                itr = bullets.iterator();
-            }
+            } 
         }
-        
     }
     
     private void render() {
@@ -224,21 +250,29 @@ public class Game implements Runnable {
         */
         if (bs == null) {
             display.getCanvas().createBufferStrategy(3);
-        }
-        else
-        {
-            g = bs.getDrawGraphics();
-            g.drawImage(Assets.background, 0, 0, width, height, null);
-            player.render(g);
-            
-            Iterator itr = enemies.iterator();
-            while(itr.hasNext()){
-            ((Enemy) itr.next()).render(g);
-            }
-            
-            itr = bullets.iterator();
-            while(itr.hasNext()){
-            ((Bullet) itr.next()).render(g);
+        }else{
+            if(!pause){
+                g = bs.getDrawGraphics();
+                g.drawImage(Assets.background, 0, 0, width, height, null);
+                player.render(g);
+                Boss.render(g);
+                Iterator itr = enemies.iterator();
+                while(itr.hasNext()){
+                ((Enemy) itr.next()).render(g);
+                }
+
+                itr = bullets.iterator();
+                while(itr.hasNext()){
+                ((Bullet) itr.next()).render(g);
+                }
+                
+                itr = Enemybullets.iterator();
+                while(itr.hasNext()){
+                    ((Bullet) itr.next()).render(g);
+                }
+                
+            }else{
+                //aqui puedes poner los sprites para la pausa
             }
             
             bs.show();
@@ -271,4 +305,5 @@ public class Game implements Runnable {
             }           
         }
     }
+
 }
